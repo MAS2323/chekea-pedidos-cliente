@@ -42,4 +42,11 @@ export const WebViewDataProvider = ({ children }) => {
   );
 };
 
-export const useWebViewData = () => useContext(WebViewDataContext);
+// Custom Hook to use the context
+export const useWebViewData = () => {
+  const context = useContext(WebViewDataContext);
+  if (!context) {
+    throw new Error("useWebViewData must be used within a WebViewDataProvider");
+  }
+  return context;
+};
