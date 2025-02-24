@@ -9,6 +9,7 @@ import {
 import RequestPageIcon from "@mui/icons-material/RequestPage";
 import ListAltIcon from "@mui/icons-material/ListAlt";
 import SolicitarPedido from "./SolicitarPedido";
+import { CircularProgress } from "@mui/material";
 import MisPedidos from "./MisPedidos";
 import "../App.css";
 import { useWebViewData } from "../ContexApi";
@@ -22,6 +23,9 @@ function Menu() {
     localStorage.setItem("vista", vista);
   }, [vista, webViewData]); // Added webViewData in the dependency to ensure sync
 
+  if (!webViewData) {
+    return <CircularProgress />;
+  }
   return (
     <Box
       sx={{

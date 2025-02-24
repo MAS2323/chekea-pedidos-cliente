@@ -18,7 +18,7 @@ export const WebViewDataProvider = ({ children }) => {
       try {
         const data =
           typeof event.data === "string" ? JSON.parse(event.data) : event.data;
-        alert("Mensaje recibido:", event.data.status);
+        // alert("Mensaje recibido:", event.data.status);
         console.log(event.data, "kiee");
         setWebViewData(data);
         // uurdar en el storage
