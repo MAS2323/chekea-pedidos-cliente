@@ -36,7 +36,6 @@ function Menu() {
       </Box>
     );
   }
-
   return (
     <Box
       sx={{

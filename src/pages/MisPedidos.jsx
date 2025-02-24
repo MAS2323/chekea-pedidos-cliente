@@ -37,6 +37,20 @@ function MisPedidos() {
   useEffect(() => {
     fetchPedidos();
   }, [fetchPedidos]);
+  // Manejar la eliminación del pedido
+  const handleEliminar = async () => {
+    setisSubir(true);
+
+    try {
+      await axios.delete(`${API_URL}/pedidos/${id}`);
+      alert("Pedido eliminado correctamente");
+      navigate("/");
+    } catch (error) {
+      console.error("Error al eliminar el pedido:", error);
+    } finally {
+      setisSubir(false);
+    }
+  };
 
   if (loading) {
     return <CircularProgress />;
@@ -88,6 +102,17 @@ const PedidoCard = memo(({ pedido, navigate }) => {
         <h3 style={styles.description}>{pedido.description}</h3>
         <p style={styles.info}>⏳ Tiempo: {pedido.time}</p>
         <p style={styles.info}>📦 Cantidad: {pedido.quantity}</p>
+      </div>
+      <div>
+        <button
+          style={styles.deleteButton}
+          onClick={() => {
+            localStorage.clear(`pedido_${id}`);
+            handleEliminar();
+          }}
+        >
+          Eliminar Pedido
+        </button>
       </div>
     </div>
   );
@@ -159,6 +184,17 @@ const styles = {
   info: {
     fontSize: "14px",
     color: "#555",
+  },
+  deleteButton: {
+    flex: 1,
+    padding: "10px",
+    marginLeft: "5px",
+    backgroundColor: "#ff4d4d",
+    color: "#fff",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
+    fontSize: "16px",
   },
 };
 

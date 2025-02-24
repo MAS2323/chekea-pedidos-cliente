@@ -105,22 +105,6 @@ function ActualizarPedidos() {
       setisSubir(false);
     }
   };
-
-  // Manejar la eliminación del pedido
-  const handleEliminar = async () => {
-    setisSubir(true);
-
-    try {
-      await axios.delete(`${API_URL}/pedidos/${id}`);
-      alert("Pedido eliminado correctamente");
-      navigate("/");
-    } catch (error) {
-      console.error("Error al eliminar el pedido:", error);
-    } finally {
-      setisSubir(false);
-    }
-  };
-
   return (
     <div style={styles.container}>
       {loading ? (
@@ -198,15 +182,6 @@ function ActualizarPedidos() {
                   }}
                 >
                   Actualizar Pedido
-                </button>
-                <button
-                  style={styles.deleteButton}
-                  onClick={() => {
-                    localStorage.clear(`pedido_${id}`);
-                    handleEliminar();
-                  }}
-                >
-                  Eliminar Pedido
                 </button>
               </div>
             )}
