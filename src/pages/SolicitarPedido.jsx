@@ -102,7 +102,7 @@ function SolicitarPedido() {
   return (
     <div style={styles.container}>
       {errorMessage && <p style={styles.errorText}>{errorMessage}</p>}
-      <h1>{webViewData ? webViewData.pedidoid : "No hay"}</h1>
+      <h1>{webViewData ? webViewData.id : "No hay"}</h1>
       <form onSubmit={enviarSolicitud} style={styles.form}>
         <textarea
           placeholder="Descripción del Pedido"
