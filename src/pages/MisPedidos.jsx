@@ -3,8 +3,7 @@ import { CircularProgress } from "@mui/material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useWebViewData } from "../ContexApi";
-
-const API_URL = "http://localhost:3000";
+import { API_URL } from "../../config/configApi";
 
 function MisPedidos() {
   const [pedidos, setPedidos] = useState([]);

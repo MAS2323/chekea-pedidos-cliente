@@ -3,8 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { CircularProgress } from "@mui/material";
 import { useWebViewData } from "../ContexApi";
+import { API_URL } from "../../config/configApi";
 
-const API_URL = "http://localhost:3000";
 
 function ActualizarPedidos() {
   const { webViewData } = useWebViewData(); // acceso a los datos

@@ -2,8 +2,7 @@ import React, { useRef, useState, useCallback, useMemo } from "react";
 import axios from "axios";
 import { CircularProgress } from "@mui/material";
 import { useWebViewData } from "../ContexApi";
-
-const API_URL = "http://localhost::3000";
+import { API_URL } from "../../config/configApi";
 
 function SolicitarPedido() {
   const { webViewData } = useWebViewData(); // Get context values
