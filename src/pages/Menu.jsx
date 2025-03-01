@@ -18,24 +18,24 @@ function Menu() {
   const [vista, setVista] = useState(
     localStorage.getItem("vista") || "solicitar"
   );
-
-  useEffect(() => {
-    localStorage.setItem("vista", vista);
-  }, [vista, webViewData]); // Added webViewData in the dependency to ensure sync
-  if (!webViewData) {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}
-      >
-        <CircularProgress />
-      </Box>
-    );
-  }
+  // console.log(webViewData, "Este es el webViewData");
+  // useEffect(() => {
+  //   localStorage.setItem("vista", vista);
+  // }, [vista, webViewData]); // Added webViewData in the dependency to ensure sync
+  // if (!webViewData?.id) {
+  //   return (
+  //     <Box
+  //       sx={{
+  //         display: "flex",
+  //         justifyContent: "center",
+  //         alignItems: "center",
+  //         height: "100vh",
+  //       }}
+  //     >
+  //       <CircularProgress />
+  //     </Box>
+  //   );
+  // }
   return (
     <Box
       sx={{
