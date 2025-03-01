@@ -21,19 +21,16 @@ export const WebViewDataProvider = ({ children }) => {
         // alert("Mensaje recibido:", event.data.status);
         console.log(event.data, "kiee");
         if (data) {
-          // El usuario está autenticado
-          const userResponse = `Hola ${data}, ¿permites que utilicemos tus datos registrados para continuar?`;
-          if (userResponse) {
-            if (
-              window.confirm(
-                "¿Permites que utilicemos tus datos registrados para continuar?"
-              )
-            ) {
-              setWebViewData(data);
-            } else {
-              // setConsentGiven(false);
-              console.log("El usuario no ha dado su consentimiento");
-            }
+          console.log("Mensaje recibido:", data); // log
+          if (
+            window.confirm(
+              "¿Permites que utilicemos tus datos registrados para continuar?"
+            )
+          ) {
+            setWebViewData(data);
+          } else {
+            // setConsentGiven(false);
+            console.log("El usuario no ha dado su consentimiento");
           }
         }
         // setWebViewData(data);
