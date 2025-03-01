@@ -34,7 +34,6 @@ export const WebViewDataProvider = ({ children }) => {
               // setConsentGiven(false);
               console.log("El usuario no ha dado su consentimiento");
             }
-            setWebViewData(data);
           }
         }
         // setWebViewData(data);

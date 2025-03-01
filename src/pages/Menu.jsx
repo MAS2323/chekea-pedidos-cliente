@@ -22,7 +22,7 @@ function Menu() {
   useEffect(() => {
     localStorage.setItem("vista", vista);
   }, [vista, webViewData]); // Added webViewData in the dependency to ensure sync
-  if (!webViewData?.id) {
+  if (!webViewData.id) {
     return (
       <Box
         sx={{
