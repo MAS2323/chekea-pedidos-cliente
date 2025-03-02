@@ -10,44 +10,35 @@ function MisPedidos() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const { webViewData } = useWebViewData(); // valores
+  const { webViewData } = useWebViewData();
 
   const fetchPedidos = useCallback(async () => {
-    const storedPedidos = localStorage.getItem("pedidos");
-    if (storedPedidos) {
-      setPedidos(JSON.parse(storedPedidos));
+    try {
+      const response = await axios.get(`${API_URL}/pedidos/${webViewData.id}`);
+      setPedidos(response.data);
+      localStorage.setItem("pedidos", JSON.stringify(response.data));
+    } catch (err) {
+      console.error("Error al obtener los pedidos:", err);
+      setError("Hubo un problema al cargar los pedidos. Inténtalo más tarde.");
+    } finally {
       setLoading(false);
-    } else {
-      try {
-        const response = await axios.get(`${API_URL}/pedidos/user`);
-        setPedidos(response.data);
-        localStorage.setItem("pedidos", JSON.stringify(response.data));
-      } catch (err) {
-        console.error("Error al obtener los pedidos:", err);
-        setError(
-          "Hubo un problema al cargar los pedidos. Inténtalo más tarde."
-        );
-      } finally {
-        setLoading(false);
-      }
     }
-  }, []);
+  }, [webViewData.id]);
 
   useEffect(() => {
     fetchPedidos();
   }, [fetchPedidos]);
-  // Manejar la eliminación del pedido
-  const handleEliminar = async () => {
-    setisSubir(true);
 
+  const handleEliminar = async (id) => {
     try {
       await axios.delete(`${API_URL}/pedidos/${id}`);
+      setPedidos((prevPedidos) =>
+        prevPedidos.filter((pedido) => pedido._id !== id)
+      );
+      localStorage.removeItem(`pedido_${id}`);
       alert("Pedido eliminado correctamente");
-      navigate("/");
     } catch (error) {
       console.error("Error al eliminar el pedido:", error);
-    } finally {
-      setisSubir(false);
     }
   };
 
@@ -66,7 +57,12 @@ function MisPedidos() {
       ) : (
         <div style={styles.scrollContainer}>
           {pedidos.map((pedido) => (
-            <PedidoCard key={pedido._id} pedido={pedido} navigate={navigate} />
+            <PedidoCard
+              key={pedido._id}
+              pedido={pedido}
+              handleEliminar={handleEliminar}
+              navigate={navigate}
+            />
           ))}
         </div>
       )}
@@ -74,8 +70,7 @@ function MisPedidos() {
   );
 }
 
-// Mini component for the pedido card
-const PedidoCard = memo(({ pedido, navigate }) => {
+const PedidoCard = memo(({ pedido, handleEliminar, navigate }) => {
   const getFirstImage = (images) => {
     if (!images || images.length === 0) {
       return "../assets/img/placeholderImage.png";
@@ -84,11 +79,7 @@ const PedidoCard = memo(({ pedido, navigate }) => {
   };
 
   return (
-    <div
-      style={styles.card}
-      onClick={() => navigate(`/actualizar-pedido/${pedido._id}`)}
-    >
-      {/* Mostrar la primera imagen del pedido */}
+    <div style={styles.card}>
       <img
         src={getFirstImage(pedido.image)}
         alt="Pedido"
@@ -97,22 +88,23 @@ const PedidoCard = memo(({ pedido, navigate }) => {
         }}
         style={styles.image}
       />
-      <div style={styles.details}>
+      <div
+        style={styles.details}
+        onClick={() => navigate(`/actualizar-pedido/${pedido._id}`)}
+      >
         <h3 style={styles.description}>{pedido.description}</h3>
         <p style={styles.info}>⏳ Tiempo: {pedido.time}</p>
         <p style={styles.info}>📦 Cantidad: {pedido.quantity}</p>
       </div>
-      <div>
-        <button
-          style={styles.deleteButton}
-          onClick={() => {
-            localStorage.clear(`pedido_${id}`);
-            handleEliminar();
-          }}
-        >
-          Eliminar Pedido
-        </button>
-      </div>
+      <button
+        style={styles.deleteButton}
+        onClick={(e) => {
+          e.stopPropagation(); // Evita la navegación al hacer clic en el botón
+          handleEliminar(pedido._id);
+        }}
+      >
+        Eliminar Pedido
+      </button>
     </div>
   );
 });
@@ -122,16 +114,6 @@ const styles = {
     width: "90%",
     maxWidth: "600px",
     textAlign: "center",
-  },
-  title: {
-    fontSize: "24px",
-    fontWeight: "bold",
-    marginBottom: "10px",
-    color: "#333",
-  },
-  loading: {
-    fontSize: "18px",
-    color: "#555",
   },
   error: {
     fontSize: "18px",
@@ -161,9 +143,6 @@ const styles = {
     cursor: "pointer",
     transition: "transform 0.2s ease-in-out",
   },
-  cardHover: {
-    transform: "scale(1.02)",
-  },
   image: {
     width: "80px",
     height: "80px",
@@ -185,9 +164,7 @@ const styles = {
     color: "#555",
   },
   deleteButton: {
-    flex: 1,
     padding: "10px",
-    marginLeft: "5px",
     backgroundColor: "#ff4d4d",
     color: "#fff",
     border: "none",
