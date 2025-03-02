@@ -5,7 +5,6 @@ import { CircularProgress } from "@mui/material";
 import { useWebViewData } from "../ContexApi";
 import { API_URL } from "../../config/configApi";
 
-
 function ActualizarPedidos() {
   const { webViewData } = useWebViewData(); // acceso a los datos
 
@@ -35,10 +34,10 @@ function ActualizarPedidos() {
         setLoading(false);
       } else {
         try {
-          const response = await axios.get(`${API_URL}/pedidos/${id}`);
+          const response = await axios.get(`${API_URL}/pedido/${id}`);
           setPedido(response.data);
           setImagePreviews(response.data.image.map((img) => img.url));
-          localStorage.setItem(`pedido_${id}`, JSON.stringify(response.data)); // Guarda el pedido en localStorage con su ID
+          localStorage.setItem(`pedido_${id}`, JSON.stringify(response.data)); 
         } catch (error) {
           console.error("Error al obtener el pedido:", error);
         } finally {
