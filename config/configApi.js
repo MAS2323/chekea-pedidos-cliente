@@ -1,2 +1,3 @@
-// export const API_URL = "http://localhost:3000";
-export const API_URL = "server-chekea-pedidos-production.up.railway.app";
+export const API_URL =
+  import.meta.env.VITE_API_URL ||
+  "https://server-chekea-pedidos-production-a491.up.railway.app";
