@@ -13,7 +13,7 @@ function SolicitarPedido() {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const userId = useRef(localStorage.getItem("userId")); // Evitar re-renders innecesarios
+  const id = useRef(localStorage.getItem("userId")); // Evitar re-renders innecesarios
 
   console.log(webViewData);
   const handleImagenChange = useCallback(
@@ -43,11 +43,12 @@ function SolicitarPedido() {
       setLoading(true);
       const formData = new FormData();
       formData.append("description", description);
+      formData.append("id", webViewData?.id);
       formData.append("quantity", quantity);
       formData.append("time", time);
       images.forEach((img) => formData.append("images", img));
       try {
-        await axios.post(`${API_URL}/${userId.current}`, formData, {
+        await axios.post(`${API_URL}/pedidos`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
         alert("Pedido solicitado correctamente.");
