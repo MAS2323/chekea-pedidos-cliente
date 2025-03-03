@@ -100,10 +100,10 @@ const PedidoCard = memo(({ pedido, handleEliminar, navigate }) => {
         onClick={() => navigate(`/actualizar-pedido/${pedido._id}`)}
       >
         <h3 style={styles.description}>{pedido.description}</h3>
-        <p style={styles.info}>⏳ Tiempo: {pedido.time}</p>
-        <p style={styles.info}>📦 Cantidad: {pedido.quantity}</p>
+        <p style={styles.info}>⏳Tiempo: {pedido.time}</p>
+        <p style={styles.info}>📦Cantidad: {pedido.quantity}</p>
       </div>
-      <p style={styles.status}>🔹 Estatus: {pedido.status}</p>
+      <p style={styles.status}>🔹Estado: {pedido.status}</p>
       <button
         style={styles.deleteButton}
         onClick={(e) => {
