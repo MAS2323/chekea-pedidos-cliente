@@ -30,8 +30,8 @@ function MisPedidos() {
     } finally {
       setLoading(false);
     }
-  }, [webViewData.id]);
-
+  }, []);
+  // webViewData.id;
   useEffect(() => {
     fetchPedidos();
   }, [fetchPedidos]);
