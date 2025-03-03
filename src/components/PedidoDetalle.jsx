@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { CircularProgress, Modal, Box } from "@mui/material";
+import {
+  CircularProgress,
+  Modal,
+  Box,
+  Select,
+  MenuItem,
+  Snackbar,
+} from "@mui/material";
 import { API_URL } from "../../config/configApi";
 
 function PedidoDetalle() {
@@ -11,29 +18,47 @@ function PedidoDetalle() {
   const [error, setError] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
+  const [status, setStatus] = useState("Pendiente");
+  const [updateError, setUpdateError] = useState(null); // Nuevo estado para el error de actualización
 
   useEffect(() => {
-    const storedPedido = JSON.parse(localStorage.getItem(`pedido_${id}`));
-    if (storedPedido) {
-      setPedido(storedPedido);
-      setLoading(false);
-    } else {
-      const fetchPedido = async () => {
-        try {
-          const response = await axios.get(`${API_URL}/pedido/${id}`);
-          console.log("Pedido recibido:", response.data); // Verificación
-          setPedido(response.data);
-          localStorage.setItem(`pedido_${id}`, JSON.stringify(response.data));
-        } catch (err) {
-          console.error("Error al cargar el pedido:", err); // Verificación de error
-          setError("Hubo un problema al cargar los detalles del pedido.");
-        } finally {
-          setLoading(false);
-        }
-      };
-      fetchPedido();
-    }
+    const fetchPedido = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/pedido/${id}`);
+        console.log("Pedido recibido:", response.data);
+        setPedido(response.data);
+        setStatus(response.data.status || "Pendiente");
+      } catch (err) {
+        console.error("Error al cargar el pedido:", err);
+        setError("Hubo un problema al cargar los detalles del pedido.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPedido();
   }, [id]);
+
+  const handleStatusChange = async (event) => {
+    const newStatus = event.target.value;
+    setStatus(newStatus);
+    console.log("Enviando status:", newStatus); // Verifica el valor de status
+
+    try {
+      const response = await axios.patch(`${API_URL}/pedidos/${id}/status`, {
+        status: newStatus,
+      });
+      console.log("Respuesta del servidor:", response);
+      console.log("Respuesta del servidor:", response.data); // Verifica la respuesta
+      setPedido((prevPedido) => ({ ...prevPedido, status: newStatus }));
+      window.dispatchEvent(new Event("pedidoActualizado"));
+      setUpdateError(null); // Limpiar el error si la actualización es exitosa
+    } catch (err) {
+      console.error("Error al actualizar el estado:", err);
+      setUpdateError(
+        "No se pudo actualizar el estado del pedido. Intente nuevamente."
+      );
+    }
+  };
 
   const handleImageClick = (imageUrl) => {
     setSelectedImage(imageUrl);
@@ -68,8 +93,25 @@ function PedidoDetalle() {
           <p style={styles.info}>
             <strong>Cantidad:</strong> {pedido.quantity || "No disponible"}
           </p>
+          <p style={styles.info}>
+            <strong>Estado:</strong>
+          </p>
+          <Select value={status} onChange={handleStatusChange}>
+            <MenuItem value="Pendiente">Pendiente</MenuItem>
+            <MenuItem value="Procesando">Procesando</MenuItem>
+            <MenuItem value="Enviado">Enviado</MenuItem>
+            <MenuItem value="Entregado">Entregado</MenuItem>
+          </Select>
 
-          {/* Mostrar todas las imágenes */}
+          {updateError && (
+            <Snackbar
+              open={true}
+              message={updateError}
+              autoHideDuration={6000}
+              onClose={() => setUpdateError(null)}
+            />
+          )}
+
           {pedido.image && pedido.image.length > 0 && (
             <div style={styles.imageContainer}>
               {pedido.image.map((img, index) => (
@@ -89,7 +131,6 @@ function PedidoDetalle() {
         <p style={styles.noPedido}>Pedido no encontrado.</p>
       )}
 
-      {/* Modal para ver la imagen ampliada */}
       <Modal open={openModal} onClose={handleCloseModal}>
         <Box style={styles.modalBox}>
           <img

@@ -31,7 +31,7 @@ function MisPedidos() {
       setLoading(false);
     }
   }, []);
-  // webViewData.id;
+
   useEffect(() => {
     fetchPedidos();
   }, [fetchPedidos]);
@@ -103,6 +103,7 @@ const PedidoCard = memo(({ pedido, handleEliminar, navigate }) => {
         <p style={styles.info}>⏳ Tiempo: {pedido.time}</p>
         <p style={styles.info}>📦 Cantidad: {pedido.quantity}</p>
       </div>
+      <p style={styles.status}>🔹 Estatus: {pedido.status}</p>
       <button
         style={styles.deleteButton}
         onClick={(e) => {
@@ -169,6 +170,11 @@ const styles = {
   info: {
     fontSize: "14px",
     color: "#555",
+  },
+  status: {
+    fontSize: "14px",
+    color: "#007bff",
+    fontWeight: "bold",
   },
   deleteButton: {
     padding: "10px",
