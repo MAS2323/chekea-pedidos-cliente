@@ -13,41 +13,31 @@ export const WebViewDataProvider = ({ children }) => {
 
   useEffect(() => {
     const handleMessage = (event) => {
-      console.log("Mensaje recibido:", event.data, "donde"); // log
+      console.log("📩 Mensaje recibido:", event.data);
 
       try {
         const data =
           typeof event.data === "string" ? JSON.parse(event.data) : event.data;
-        // alert("Mensaje recibido:", event.data.status);
-        console.log(event.data, "kiee");
-        if (data) {
-          console.log("Mensaje recibido:", data); // log
-          if (
-            window.confirm(
-              "¿Permites que utilicemos tus datos registrados para continuar?"
-            )
-          ) {
-            setWebViewData(data);
-          } else {
-            // setConsentGiven(false);
-            console.log("El usuario no ha dado su consentimiento");
-          }
-        }
-        // setWebViewData(data);
-        // uurdar en el storage
+        setWebViewData(data);
+
+        // Store in sessionStorage
         sessionStorage.setItem("webViewData", JSON.stringify(data));
       } catch (error) {
-        console.error("Error al recibir datos desde la WebView:", error);
+        console.error("❌ Error al recibir datos desde la WebView:", error);
       }
     };
 
+    // ✅ Works for Android
     window.addEventListener("message", handleMessage);
+
+    // ✅ Required for iOS WebView
+    document.addEventListener("message", handleMessage);
 
     return () => {
       window.removeEventListener("message", handleMessage);
+      document.removeEventListener("message", handleMessage);
     };
   }, []);
-
   return (
     <WebViewDataContext.Provider value={{ webViewData, setWebViewData }}>
       {children}
