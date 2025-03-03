@@ -16,12 +16,12 @@ import { useWebViewData } from "../ContexApi";
 function Menu() {
   const { webViewData } = useWebViewData(); // acceso a los datos
   const [vista, setVista] = useState(
-    localStorage.getItem("vista") || "solicitar"
+    () => localStorage.getItem("vista") || "solicitar"
   );
 
   useEffect(() => {
     localStorage.setItem("vista", vista);
-  }, [vista, webViewData]); // Added webViewData in the dependency to ensure sync
+  }, [vista]); // Added webViewData in the dependency to ensure sync
   if (!webViewData?.id) {
     return (
       <Box

@@ -13,7 +13,14 @@ function MisPedidos() {
   const { webViewData } = useWebViewData();
 
   const fetchPedidos = useCallback(async () => {
+    setLoading(true);
     try {
+      const storedPedidos = localStorage.getItem("pedidos");
+      if (storedPedidos) {
+        setPedidos(JSON.parse(storedPedidos));
+        setLoading(false);
+      }
+
       const response = await axios.get(`${API_URL}/pedidos/${webViewData.id}`);
       setPedidos(response.data);
       localStorage.setItem("pedidos", JSON.stringify(response.data));
