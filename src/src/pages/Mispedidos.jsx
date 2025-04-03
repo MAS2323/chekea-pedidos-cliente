@@ -21,7 +21,7 @@ function MisPedidos() {
         setLoading(false);
       }
 
-      const response = await axios.get(`${API_URL}/pedidos`);
+      const response = await axios.get(`${API_URL}/pedidos/${webViewData.id}`);
       setPedidos(response.data);
       localStorage.setItem("pedidos", JSON.stringify(response.data));
     } catch (err) {
