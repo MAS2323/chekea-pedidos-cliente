@@ -7,7 +7,8 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 
 function SolicitarPedido() {
-  const { webViewData } = useWebViewData();
+  const { webViewData } = useWebViewData(); // Get context values
+
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState("");
   const [time, setTime] = useState("");
@@ -96,23 +97,40 @@ function SolicitarPedido() {
           required
           style={styles.input}
         />
-        <div style={styles.phoneInputContainer}>
-          <PhoneInput
-            country={"pe"} // País por defecto: Perú
-            value={phone}
-            onChange={setPhone}
-            inputProps={{
-              required: true,
-              placeholder: "Ingresa tu número de teléfono",
-            }}
-            inputStyle={styles.phoneInput}
-            buttonStyle={styles.phoneButton}
-            dropdownStyle={styles.phoneDropdown}
-            containerStyle={styles.phoneContainer}
-            enableSearch={true} // Permite buscar el país
-            countryCodeEditable={false}
-          />
-        </div>
+        <PhoneInput
+          country={"gq"} // País por defecto: Guinea Ecuatorial
+          value={phone}
+          onChange={(value) => setPhone(value)}
+          inputStyle={{
+            ...styles.input,
+            paddingLeft: "50px", // Espacio suficiente para mostrar el prefijo del país
+            "::placeholder": {
+              color: "#aaa",
+              opacity: 1,
+            },
+          }}
+          buttonStyle={{
+            backgroundColor: "#f8f8f8",
+            border: "1px solid #ccc",
+            borderRadius: "5px 0 0 5px",
+            padding: "0 5px",
+          }}
+          dropdownStyle={{
+            borderRadius: "5px",
+            marginTop: "5px",
+            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+          }}
+          containerStyle={{
+            width: "100%",
+          }}
+          inputProps={{
+            required: true,
+            placeholder: phone ? "" : "Ingresa tu número de teléfono", // Placeholder dinámico
+          }}
+          autoFormat={true} // Formatea automáticamente el número
+          disableCountryGuess={true} // Desactiva la suposición automática del país basada en el número
+          countryCodeEditable={false} // Evita que el usuario edite el código del país
+        />
         <div style={styles.imageGrid}>
           {images.map((image, index) => (
             <div key={index} style={styles.imageContainer}>
@@ -252,31 +270,6 @@ const styles = {
     color: "red",
     fontWeight: "bold",
     marginBottom: "10px",
-  },
-  phoneInputContainer: {
-    width: "100%",
-    margin: "5px 0",
-  },
-  phoneContainer: {
-    width: "100%",
-  },
-  phoneInput: {
-    width: "100%",
-    padding: "10px 10px 10px 50px",
-    borderRadius: "5px",
-    border: "1px solid #ccc",
-    fontSize: "16px",
-    height: "auto",
-  },
-  phoneButton: {
-    backgroundColor: "#f8f8f8",
-    border: "1px solid #ccc",
-    borderRadius: "5px 0 0 5px",
-    padding: "0 5px",
-  },
-  phoneDropdown: {
-    borderRadius: "5px",
-    marginTop: "5px",
   },
 };
 
