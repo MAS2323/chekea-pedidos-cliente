@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback } from "react";
+import React, { useRef, useState, useCallback, useMemo } from "react";
 import axios from "axios";
 import { CircularProgress } from "@mui/material";
 import { useWebViewData } from "../ContexApi";
@@ -98,16 +98,19 @@ function SolicitarPedido() {
         />
         <div style={styles.phoneInputContainer}>
           <PhoneInput
-            country={"us"}
+            country={"pe"} // País por defecto: Perú
             value={phone}
-            onChange={(value) => setPhone(value)}
+            onChange={setPhone}
+            inputProps={{
+              required: true,
+              placeholder: "Ingresa tu número de teléfono",
+            }}
             inputStyle={styles.phoneInput}
-            buttonStyle={styles.dropdownButton}
-            dropdownStyle={styles.dropdownStyle}
+            buttonStyle={styles.phoneButton}
+            dropdownStyle={styles.phoneDropdown}
             containerStyle={styles.phoneContainer}
-            placeholder="Número de teléfono / Whatsapp"
-            enableSearch
-            searchPlaceholder="Buscar país"
+            enableSearch={true} // Permite buscar el país
+            countryCodeEditable={false}
           />
         </div>
         <div style={styles.imageGrid}>
@@ -153,31 +156,102 @@ function SolicitarPedido() {
 const styles = {
   container: {
     width: "90vw",
-    maxWidth: "500px",
-    margin: "0 auto",
-    padding: "20px",
     textAlign: "center",
-    backgroundColor: "#f9f9f9",
-    borderRadius: "10px",
-    boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
+  },
+  title: {
+    fontSize: "24px",
+    fontWeight: "bold",
+    marginBottom: "15px",
   },
   form: {
-    width: "100%",
+    width: "80vw",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    gap: "15px",
   },
   input: {
     width: "100%",
-    padding: "12px 15px",
-    margin: "5px 0",
-    borderRadius: "8px",
-    border: "1px solid #ddd",
+    padding: "10px",
+    margin: "8px 0",
+    borderRadius: "5px",
+    border: "1px solid #ccc",
     fontSize: "16px",
-    backgroundColor: "#fff",
-    boxShadow: "inset 0 1px 3px rgba(0, 0, 0, 0.1)",
-    transition: "border 0.3s ease",
+  },
+  fileInput: {
+    display: "none",
+  },
+  imageLabel: {
+    cursor: "pointer",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "120px",
+    height: "120px",
+    borderRadius: "50%",
+    backgroundColor: "#f0f0f0",
+    border: "2px dashed #ccc",
+    marginBottom: "10px",
+    overflow: "hidden",
+    position: "relative",
+  },
+  avatarPlaceholder: {
+    fontSize: "40px",
+    color: "#aaa",
+    fontWeight: "bold",
+  },
+  imageGrid: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "10px",
+    justifyContent: "center",
+    marginBottom: "10px",
+  },
+  imageContainer: {
+    position: "relative",
+    display: "inline-block",
+  },
+  imagePreview: {
+    width: "80px",
+    height: "80px",
+    objectFit: "cover",
+    borderRadius: "50%",
+    border: "2px solid #ccc",
+  },
+  deleteButton: {
+    position: "absolute",
+    top: "-8px",
+    right: "-8px",
+    background: "rgba(255, 255, 255, 0.8)",
+    color: "white",
+    border: "none",
+    borderRadius: "50%",
+    width: "24px",
+    height: "24px",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  submitButton: {
+    marginTop: "10px",
+    padding: "10px 20px",
+    backgroundColor: "#4CAF50",
+    color: "#fff",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
+    fontSize: "16px",
+  },
+  loadingText: {
+    fontSize: "16px",
+    color: "#ff6600",
+    fontWeight: "bold",
+    marginBottom: "10px",
+  },
+  errorText: {
+    fontSize: "14px",
+    color: "red",
+    fontWeight: "bold",
+    marginBottom: "10px",
   },
   phoneInputContainer: {
     width: "100%",
@@ -188,115 +262,21 @@ const styles = {
   },
   phoneInput: {
     width: "100%",
+    padding: "10px 10px 10px 50px",
+    borderRadius: "5px",
+    border: "1px solid #ccc",
+    fontSize: "16px",
     height: "auto",
-    padding: "12px 15px 12px 60px",
-    borderRadius: "8px",
-    border: "1px solid #ddd",
-    fontSize: "16px",
-    backgroundColor: "#fff",
-    boxShadow: "inset 0 1px 3px rgba(0, 0, 0, 0.1)",
-    transition: "border 0.3s ease",
   },
-  dropdownButton: {
-    backgroundColor: "#fff",
-    border: "1px solid #ddd",
-    borderRadius: "8px 0 0 8px",
-    padding: "0 10px",
-    height: "100%",
+  phoneButton: {
+    backgroundColor: "#f8f8f8",
+    border: "1px solid #ccc",
+    borderRadius: "5px 0 0 5px",
+    padding: "0 5px",
   },
-  dropdownStyle: {
-    borderRadius: "8px",
+  phoneDropdown: {
+    borderRadius: "5px",
     marginTop: "5px",
-    boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
-  },
-  fileInput: {
-    display: "none",
-  },
-  imageLabel: {
-    cursor: "pointer",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100px",
-    height: "100px",
-    borderRadius: "8px",
-    backgroundColor: "#f0f0f0",
-    border: "2px dashed #ccc",
-    overflow: "hidden",
-    position: "relative",
-    transition: "all 0.3s ease",
-    "&:hover": {
-      borderColor: "#4CAF50",
-      backgroundColor: "#e8f5e9",
-    },
-  },
-  avatarPlaceholder: {
-    fontSize: "36px",
-    color: "#aaa",
-    fontWeight: "bold",
-  },
-  imageGrid: {
-    display: "flex",
-    flexWrap: "wrap",
-    gap: "10px",
-    justifyContent: "center",
-    margin: "10px 0",
-  },
-  imageContainer: {
-    position: "relative",
-    display: "inline-block",
-  },
-  imagePreview: {
-    width: "80px",
-    height: "80px",
-    objectFit: "cover",
-    borderRadius: "8px",
-    border: "2px solid #ddd",
-  },
-  deleteButton: {
-    position: "absolute",
-    top: "-5px",
-    right: "-5px",
-    background: "#ff4444",
-    color: "white",
-    border: "none",
-    borderRadius: "50%",
-    width: "20px",
-    height: "20px",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    fontSize: "10px",
-    cursor: "pointer",
-    padding: 0,
-  },
-  submitButton: {
-    width: "100%",
-    padding: "12px",
-    backgroundColor: "#4CAF50",
-    color: "#fff",
-    border: "none",
-    borderRadius: "8px",
-    cursor: "pointer",
-    fontSize: "16px",
-    fontWeight: "bold",
-    textTransform: "uppercase",
-    letterSpacing: "1px",
-    transition: "background-color 0.3s ease",
-    "&:hover": {
-      backgroundColor: "#388E3C",
-    },
-    "&:disabled": {
-      backgroundColor: "#a5d6a7",
-      cursor: "not-allowed",
-    },
-  },
-  errorText: {
-    fontSize: "14px",
-    color: "#ff4444",
-    fontWeight: "bold",
-    marginBottom: "10px",
-    textAlign: "center",
   },
 };
 
