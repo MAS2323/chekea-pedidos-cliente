@@ -133,7 +133,7 @@ const styles = {
   },
   scrollContainer: {
     maxHeight: "400px",
-    overflowY: "auto",
+    // overflowY: "auto",
     padding: "10px",
     borderRadius: "10px",
     boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
@@ -146,10 +146,10 @@ const styles = {
     padding: "15px",
     marginBottom: "10px",
     borderRadius: "10px",
-    boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
+    // boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
     background: "#f9f9f9",
     cursor: "pointer",
-    transition: "transform 0.2s ease-in-out",
+    // transition: "transform 0.2s ease-in-out",
   },
   image: {
     width: "80px",
