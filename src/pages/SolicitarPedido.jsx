@@ -127,6 +127,7 @@ function SolicitarPedido() {
             required: true,
             placeholder: phone ? "" : "Ingresa tu número de teléfono", // Placeholder dinámico
           }}
+          enableSearch
           autoFormat={true} // Formatea automáticamente el número
           disableCountryGuess={true} // Desactiva la suposición automática del país basada en el número
           countryCodeEditable={false} // Evita que el usuario edite el código del país
