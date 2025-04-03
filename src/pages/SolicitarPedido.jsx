@@ -1,21 +1,22 @@
-import React, { useRef, useState, useCallback, useMemo } from "react";
+import React, { useRef, useState, useCallback } from "react";
 import axios from "axios";
 import { CircularProgress } from "@mui/material";
 import { useWebViewData } from "../ContexApi";
 import { API_URL } from "../../config/configApi";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 
 function SolicitarPedido() {
-  const { webViewData } = useWebViewData(); // Get context values
-
+  const { webViewData } = useWebViewData();
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState("");
   const [time, setTime] = useState("");
+  const [phone, setPhone] = useState("");
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const id = useRef(localStorage.getItem("userId")); // Evitar re-renders innecesarios
+  const id = useRef(localStorage.getItem("userId"));
 
-  console.log(webViewData);
   const handleImagenChange = useCallback(
     (e) => {
       const files = Array.from(e.target.files);
@@ -36,7 +37,7 @@ function SolicitarPedido() {
   const enviarSolicitud = useCallback(
     async (e) => {
       e.preventDefault();
-      if (!description || !quantity || !time || images.length === 0) {
+      if (!description || !quantity || !time || !phone || images.length === 0) {
         alert("Por favor, completa todos los campos.");
         return;
       }
@@ -46,6 +47,7 @@ function SolicitarPedido() {
       formData.append("id", webViewData?.id);
       formData.append("quantity", quantity);
       formData.append("time", time);
+      formData.append("phone", phone);
       images.forEach((img) => formData.append("images", img));
       try {
         await axios.post(`${API_URL}/pedidos`, formData, {
@@ -55,6 +57,7 @@ function SolicitarPedido() {
         setDescription("");
         setQuantity("");
         setTime("");
+        setPhone("");
         setImages([]);
       } catch (error) {
         console.error("Error al enviar la solicitud:", error);
@@ -63,40 +66,7 @@ function SolicitarPedido() {
         setLoading(false);
       }
     },
-    [description, quantity, time, images]
-  );
-
-  const previewImages = useMemo(
-    () =>
-      images.map((image, index) => (
-        <div key={index} style={styles.imageContainer}>
-          <img
-            src={URL.createObjectURL(image)}
-            alt={`Imagen ${index + 1}`}
-            style={styles.imagePreview}
-          />
-          <button
-            type="button"
-            onClick={() => eliminarImagen(index)}
-            style={styles.deleteButton}
-          >
-            ❌
-          </button>
-        </div>
-      )),
-    [images, eliminarImagen]
-  );
-
-  const submitButton = useMemo(
-    () =>
-      loading ? (
-        <CircularProgress />
-      ) : (
-        <button type="submit" style={styles.submitButton} disabled={loading}>
-          Enviar Solicitud
-        </button>
-      ),
-    [loading]
+    [description, quantity, time, phone, images]
   );
 
   return (
@@ -126,7 +96,38 @@ function SolicitarPedido() {
           required
           style={styles.input}
         />
-        <div style={styles.imageGrid}>{previewImages}</div>
+        <div style={styles.phoneInputContainer}>
+          <PhoneInput
+            country={"us"}
+            value={phone}
+            onChange={(value) => setPhone(value)}
+            inputStyle={styles.phoneInput}
+            buttonStyle={styles.dropdownButton}
+            dropdownStyle={styles.dropdownStyle}
+            containerStyle={styles.phoneContainer}
+            placeholder="Número de teléfono / Whatsapp"
+            enableSearch
+            searchPlaceholder="Buscar país"
+          />
+        </div>
+        <div style={styles.imageGrid}>
+          {images.map((image, index) => (
+            <div key={index} style={styles.imageContainer}>
+              <img
+                src={URL.createObjectURL(image)}
+                alt={`Imagen ${index + 1}`}
+                style={styles.imagePreview}
+              />
+              <button
+                type="button"
+                onClick={() => eliminarImagen(index)}
+                style={styles.deleteButton}
+              >
+                ❌
+              </button>
+            </div>
+          ))}
+        </div>
         <label style={styles.imageLabel}>
           <input
             type="file"
@@ -137,34 +138,76 @@ function SolicitarPedido() {
           />
           <div style={styles.avatarPlaceholder}>+</div>
         </label>
-        {submitButton}
+        {loading ? (
+          <CircularProgress />
+        ) : (
+          <button type="submit" style={styles.submitButton} disabled={loading}>
+            Enviar Solicitud
+          </button>
+        )}
       </form>
     </div>
   );
 }
+
 const styles = {
   container: {
     width: "90vw",
+    maxWidth: "500px",
+    margin: "0 auto",
+    padding: "20px",
     textAlign: "center",
-  },
-  title: {
-    fontSize: "24px",
-    fontWeight: "bold",
-    marginBottom: "15px",
+    backgroundColor: "#f9f9f9",
+    borderRadius: "10px",
+    boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
   },
   form: {
-    width: "80vw",
+    width: "100%",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
+    gap: "15px",
   },
   input: {
     width: "100%",
-    padding: "10px",
-    margin: "8px 0",
-    borderRadius: "5px",
-    border: "1px solid #ccc",
+    padding: "12px 15px",
+    margin: "5px 0",
+    borderRadius: "8px",
+    border: "1px solid #ddd",
     fontSize: "16px",
+    backgroundColor: "#fff",
+    boxShadow: "inset 0 1px 3px rgba(0, 0, 0, 0.1)",
+    transition: "border 0.3s ease",
+  },
+  phoneInputContainer: {
+    width: "100%",
+    margin: "5px 0",
+  },
+  phoneContainer: {
+    width: "100%",
+  },
+  phoneInput: {
+    width: "100%",
+    height: "auto",
+    padding: "12px 15px 12px 60px",
+    borderRadius: "8px",
+    border: "1px solid #ddd",
+    fontSize: "16px",
+    backgroundColor: "#fff",
+    boxShadow: "inset 0 1px 3px rgba(0, 0, 0, 0.1)",
+    transition: "border 0.3s ease",
+  },
+  dropdownButton: {
+    backgroundColor: "#fff",
+    border: "1px solid #ddd",
+    borderRadius: "8px 0 0 8px",
+    padding: "0 10px",
+    height: "100%",
+  },
+  dropdownStyle: {
+    borderRadius: "8px",
+    marginTop: "5px",
+    boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
   },
   fileInput: {
     display: "none",
@@ -174,17 +217,21 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    width: "120px",
-    height: "120px",
-    borderRadius: "50%",
+    width: "100px",
+    height: "100px",
+    borderRadius: "8px",
     backgroundColor: "#f0f0f0",
     border: "2px dashed #ccc",
-    marginBottom: "10px",
     overflow: "hidden",
     position: "relative",
+    transition: "all 0.3s ease",
+    "&:hover": {
+      borderColor: "#4CAF50",
+      backgroundColor: "#e8f5e9",
+    },
   },
   avatarPlaceholder: {
-    fontSize: "40px",
+    fontSize: "36px",
     color: "#aaa",
     fontWeight: "bold",
   },
@@ -193,7 +240,7 @@ const styles = {
     flexWrap: "wrap",
     gap: "10px",
     justifyContent: "center",
-    marginBottom: "10px",
+    margin: "10px 0",
   },
   imageContainer: {
     position: "relative",
@@ -203,44 +250,53 @@ const styles = {
     width: "80px",
     height: "80px",
     objectFit: "cover",
-    borderRadius: "50%",
-    border: "2px solid #ccc",
+    borderRadius: "8px",
+    border: "2px solid #ddd",
   },
   deleteButton: {
     position: "absolute",
-    top: "-8px",
-    right: "-8px",
-    background: "rgba(255, 255, 255, 0.8)",
+    top: "-5px",
+    right: "-5px",
+    background: "#ff4444",
     color: "white",
     border: "none",
     borderRadius: "50%",
-    width: "24px",
-    height: "24px",
+    width: "20px",
+    height: "20px",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+    fontSize: "10px",
+    cursor: "pointer",
+    padding: 0,
   },
   submitButton: {
-    marginTop: "10px",
-    padding: "10px 20px",
+    width: "100%",
+    padding: "12px",
     backgroundColor: "#4CAF50",
     color: "#fff",
     border: "none",
-    borderRadius: "5px",
+    borderRadius: "8px",
     cursor: "pointer",
     fontSize: "16px",
-  },
-  loadingText: {
-    fontSize: "16px",
-    color: "#ff6600",
     fontWeight: "bold",
-    marginBottom: "10px",
+    textTransform: "uppercase",
+    letterSpacing: "1px",
+    transition: "background-color 0.3s ease",
+    "&:hover": {
+      backgroundColor: "#388E3C",
+    },
+    "&:disabled": {
+      backgroundColor: "#a5d6a7",
+      cursor: "not-allowed",
+    },
   },
   errorText: {
     fontSize: "14px",
-    color: "red",
+    color: "#ff4444",
     fontWeight: "bold",
     marginBottom: "10px",
+    textAlign: "center",
   },
 };
 
